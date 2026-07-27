@@ -272,25 +272,83 @@
 
       .crayon {
         position: relative;
-        width: 42px;
-        height: 22px;
+        width: 38px;
+        height: 38px;
         padding: 0;
         border: 1px solid rgba(255, 255, 255, 0.42);
-        border-radius: 8px 3px 3px 8px;
-        background: var(--crayon-color);
-        box-shadow: inset 10px 0 rgba(255, 255, 255, 0.22), 0 6px 10px rgba(10, 16, 30, 0.18);
+        border-radius: 50%;
+        background:
+          radial-gradient(circle at 34% 24%, rgba(255, 255, 255, 0.42), transparent 26%),
+          rgba(255, 255, 255, 0.12);
+        box-shadow: 0 8px 15px rgba(10, 16, 30, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.42);
         cursor: pointer;
       }
 
+      .crayon::before,
       .crayon::after {
         content: "";
         position: absolute;
-        right: -11px;
-        top: 2px;
-        border-left: 11px solid var(--crayon-color);
-        border-top: 9px solid transparent;
-        border-bottom: 9px solid transparent;
-        filter: drop-shadow(1px 0 rgba(255, 255, 255, 0.3));
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      .crayon::before {
+        width: 6px;
+        height: 14px;
+        border-radius: 999px;
+        background: #5daf62;
+      }
+
+      .crayon::after {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #ffe278;
+        box-shadow:
+          0 -8px 0 var(--stamp-color),
+          0 8px 0 var(--stamp-color),
+          -8px 0 0 var(--stamp-color),
+          8px 0 0 var(--stamp-color),
+          -5px -5px 0 var(--stamp-color),
+          5px -5px 0 var(--stamp-color),
+          -5px 5px 0 var(--stamp-color),
+          5px 5px 0 var(--stamp-color);
+      }
+
+      .crayon[data-color="yellow"]::after {
+        --stamp-color: #fff8ea;
+      }
+
+      .crayon[data-color="purple"]::before {
+        width: 3px;
+        height: 26px;
+        background: #477a48;
+        transform: translate(-50%, -43%) rotate(-8deg);
+      }
+
+      .crayon[data-color="purple"]::after {
+        width: 6px;
+        height: 6px;
+        background: #b38cff;
+        box-shadow:
+          -5px -9px 0 #d8c6ff,
+          4px -5px 0 #b38cff,
+          -4px 0 0 #b38cff,
+          5px 5px 0 #d8c6ff,
+          -3px 10px 0 #b38cff;
+      }
+
+      .crayon[data-color="green"]::after {
+        width: 9px;
+        height: 14px;
+        border-radius: 999px 999px 999px 2px;
+        background: #6fc06a;
+        box-shadow:
+          -8px -4px 0 #5daf62,
+          8px 3px 0 #86ce76,
+          -5px 10px 0 #6fc06a;
+        transform: translate(-50%, -50%) rotate(-28deg);
       }
 
       .crayon.is-active {
@@ -1135,14 +1193,15 @@
 
         .crayon {
           width: 34px;
-          height: 19px;
+          height: 34px;
         }
 
         .crayon::after {
-          right: -10px;
-          border-left-width: 10px;
-          border-top-width: 8px;
-          border-bottom-width: 8px;
+          transform: translate(-50%, -50%) scale(0.88);
+        }
+
+        .crayon[data-color="green"]::after {
+          transform: translate(-50%, -50%) rotate(-28deg) scale(0.88);
         }
 
         .eraser {
@@ -1246,12 +1305,12 @@
         <img src="assets/avatar-normal-cutout.png" alt="">
       </button>
       <div class="paint-dialog" aria-live="polite">
-        <span>Draw some flowers</span>
-        <div class="crayon-tray" aria-label="Flower crayons">
-          <button class="crayon is-active" type="button" data-tool="flower" data-color="pink" style="--crayon-color: #f18ab8" aria-label="Pink crayon" aria-pressed="true"></button>
-          <button class="crayon" type="button" data-tool="flower" data-color="green" style="--crayon-color: #6fc06a" aria-label="Green crayon" aria-pressed="false"></button>
-          <button class="crayon" type="button" data-tool="flower" data-color="yellow" style="--crayon-color: #ffe278" aria-label="Yellow crayon" aria-pressed="false"></button>
-          <button class="crayon" type="button" data-tool="flower" data-color="purple" style="--crayon-color: #b38cff" aria-label="Purple crayon" aria-pressed="false"></button>
+        <span>Stamp some flowers</span>
+        <div class="crayon-tray" aria-label="Flower stamps">
+          <button class="crayon is-active" type="button" data-tool="flower" data-color="pink" style="--stamp-color: #f18ab8" aria-label="Pink doodle flower" aria-pressed="true"></button>
+          <button class="crayon" type="button" data-tool="flower" data-color="green" style="--stamp-color: #6fc06a" aria-label="Leafy sprig" aria-pressed="false"></button>
+          <button class="crayon" type="button" data-tool="flower" data-color="yellow" style="--stamp-color: #fff8ea" aria-label="Daisy flower" aria-pressed="false"></button>
+          <button class="crayon" type="button" data-tool="flower" data-color="purple" style="--stamp-color: #b38cff" aria-label="Lavender flower" aria-pressed="false"></button>
           <button class="eraser" type="button" data-tool="eraser" aria-label="Eraser" aria-pressed="false"></button>
         </div>
       </div>
@@ -1476,8 +1535,9 @@
         };
 
         const crayonCursor = (color) => {
-          const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="42" height="42" viewBox="0 0 42 42"><g transform="rotate(-35 21 21)"><rect x="9" y="17" width="24" height="10" rx="3" fill="${color}" stroke="rgba(38,35,52,.78)" stroke-width="1.4"/><path d="M33 17l7 5-7 5z" fill="${color}" stroke="rgba(38,35,52,.78)" stroke-width="1.4" stroke-linejoin="round"/><path d="M12 18.5h6v7h-6z" fill="rgba(255,255,255,.28)"/></g></svg>`;
-          return `url("data:image/svg+xml,${encodeURIComponent(svg)}") 34 12`;
+          const petals = activeColor === "yellow" ? "#fff8ea" : color;
+          const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 44 44"><path d="M22 38V24" stroke="#4f8a4f" stroke-width="3" stroke-linecap="round"/><path d="M22 31c-5-5-10-2-10-2 4 5 10 2 10 2Z" fill="#6fc06a"/><g transform="translate(22 17)"><circle r="5" fill="#ffe278"/><circle cx="0" cy="-9" r="5" fill="${petals}"/><circle cx="0" cy="9" r="5" fill="${petals}"/><circle cx="-9" cy="0" r="5" fill="${petals}"/><circle cx="9" cy="0" r="5" fill="${petals}"/></g><path d="M30 8l2 4 4 2-4 2-2 4-2-4-4-2 4-2Z" fill="#fff2a8"/></svg>`;
+          return `url("data:image/svg+xml,${encodeURIComponent(svg)}") 22 22`;
         };
 
         const eraserCursor = () => {
@@ -1677,28 +1737,156 @@
           return { x, y };
         };
 
-        const drawCrayonSegment = (from, to) => {
-          const color = flowerColors[activeColor];
-          drawingCtx.save();
-          drawingCtx.globalCompositeOperation = "source-over";
-
-          for (let pass = 0; pass < 3; pass += 1) {
-            const jitter = 2.5 + pass * 1.4;
-            const jitterFromX = from.x + (Math.random() - 0.5) * jitter;
-            const jitterFromY = from.y + (Math.random() - 0.5) * jitter;
-            const jitterToX = to.x + (Math.random() - 0.5) * jitter;
-            const jitterToY = to.y + (Math.random() - 0.5) * jitter;
-
+        const drawCrayonLine = (from, to, color, width = 4, alpha = 0.34) => {
+          for (let pass = 0; pass < 2; pass += 1) {
+            const jitter = 1.5 + pass * 1.2;
             drawingCtx.beginPath();
             drawingCtx.strokeStyle = color;
-            drawingCtx.globalAlpha = 0.26 + Math.random() * 0.18;
-            drawingCtx.lineWidth = 5 + Math.random() * 3;
-            drawingCtx.moveTo(jitterFromX, jitterFromY);
-            drawingCtx.lineTo(jitterToX, jitterToY);
+            drawingCtx.globalAlpha = alpha + Math.random() * 0.12;
+            drawingCtx.lineWidth = width + Math.random() * 1.8;
+            drawingCtx.moveTo(from.x + (Math.random() - 0.5) * jitter, from.y + (Math.random() - 0.5) * jitter);
+            drawingCtx.lineTo(to.x + (Math.random() - 0.5) * jitter, to.y + (Math.random() - 0.5) * jitter);
             drawingCtx.stroke();
+          }
+        };
+
+        const drawDaisy = (point, scale, tilt) => {
+          const stemTop = { x: point.x + tilt * 0.35 * scale, y: point.y - 25 * scale };
+          drawCrayonLine(point, stemTop, "#3d7a45", 3 * scale, 0.46);
+          drawCrayonLine({ x: point.x, y: point.y - 12 * scale }, { x: point.x + 12 * scale, y: point.y - 18 * scale }, "#6fc06a", 2.6 * scale, 0.38);
+
+          for (let index = 0; index < 9; index += 1) {
+            const angle = (Math.PI * 2 * index) / 9;
+            drawingCtx.beginPath();
+            drawingCtx.fillStyle = "#fff8ea";
+            drawingCtx.globalAlpha = 0.66;
+            drawingCtx.ellipse(
+              stemTop.x + Math.cos(angle) * 9 * scale,
+              stemTop.y + Math.sin(angle) * 8 * scale,
+              4.2 * scale,
+              7.4 * scale,
+              angle,
+              0,
+              Math.PI * 2
+            );
+            drawingCtx.fill();
+          }
+
+          drawingCtx.beginPath();
+          drawingCtx.fillStyle = "#ffe278";
+          drawingCtx.globalAlpha = 0.82;
+          drawingCtx.arc(stemTop.x, stemTop.y, 4.8 * scale, 0, Math.PI * 2);
+          drawingCtx.fill();
+        };
+
+        const drawPinkDoodleFlower = (point, scale, tilt) => {
+          const stemTop = { x: point.x + tilt * 0.28 * scale, y: point.y - 23 * scale };
+          drawCrayonLine(point, stemTop, "#3d7a45", 3 * scale, 0.46);
+          drawCrayonLine({ x: point.x, y: point.y - 13 * scale }, { x: point.x - 11 * scale, y: point.y - 19 * scale }, "#6fc06a", 2.8 * scale, 0.4);
+
+          for (let index = 0; index < 5; index += 1) {
+            const angle = (Math.PI * 2 * index) / 5 + 0.25;
+            drawingCtx.beginPath();
+            drawingCtx.fillStyle = "#f18ab8";
+            drawingCtx.globalAlpha = 0.6;
+            drawingCtx.ellipse(
+              stemTop.x + Math.cos(angle) * 8.5 * scale,
+              stemTop.y + Math.sin(angle) * 7.5 * scale,
+              6.4 * scale,
+              8.6 * scale,
+              angle,
+              0,
+              Math.PI * 2
+            );
+            drawingCtx.fill();
+          }
+
+          drawingCtx.beginPath();
+          drawingCtx.strokeStyle = "#9d3f6a";
+          drawingCtx.globalAlpha = 0.48;
+          drawingCtx.lineWidth = 1.8 * scale;
+          drawingCtx.arc(stemTop.x, stemTop.y, 8.5 * scale, 0.2, Math.PI * 1.7);
+          drawingCtx.stroke();
+
+          drawingCtx.beginPath();
+          drawingCtx.fillStyle = "#ffe278";
+          drawingCtx.globalAlpha = 0.76;
+          drawingCtx.arc(stemTop.x, stemTop.y, 3.8 * scale, 0, Math.PI * 2);
+          drawingCtx.fill();
+        };
+
+        const drawLavender = (point, scale, tilt) => {
+          const top = { x: point.x + tilt * 0.42 * scale, y: point.y - 38 * scale };
+          drawCrayonLine(point, top, "#477a48", 2.8 * scale, 0.5);
+
+          for (let index = 0; index < 7; index += 1) {
+            const y = point.y - (13 + index * 4.2) * scale;
+            const spread = (index % 2 === 0 ? -1 : 1) * (5 + Math.random() * 3) * scale;
+            drawingCtx.beginPath();
+            drawingCtx.fillStyle = "#b38cff";
+            drawingCtx.globalAlpha = 0.58;
+            drawingCtx.ellipse(point.x + spread + tilt * 0.2 * scale, y, 4.2 * scale, 6 * scale, -0.55, 0, Math.PI * 2);
+            drawingCtx.fill();
+
+            drawingCtx.beginPath();
+            drawingCtx.fillStyle = "#d8c6ff";
+            drawingCtx.globalAlpha = 0.42;
+            drawingCtx.ellipse(point.x - spread * 0.35, y - 1.5 * scale, 3.2 * scale, 4.8 * scale, 0.55, 0, Math.PI * 2);
+            drawingCtx.fill();
+          }
+        };
+
+        const drawLeafySprig = (point, scale, tilt) => {
+          const top = { x: point.x + tilt * 0.35 * scale, y: point.y - 30 * scale };
+          drawCrayonLine(point, top, "#3d7a45", 3.2 * scale, 0.5);
+
+          for (let index = 0; index < 4; index += 1) {
+            const side = index % 2 === 0 ? -1 : 1;
+            const base = { x: point.x + tilt * 0.12 * scale, y: point.y - (9 + index * 6) * scale };
+            drawingCtx.beginPath();
+            drawingCtx.fillStyle = "#6fc06a";
+            drawingCtx.globalAlpha = 0.48;
+            drawingCtx.ellipse(base.x + side * 7 * scale, base.y - 2 * scale, 4.6 * scale, 8 * scale, side * 0.9, 0, Math.PI * 2);
+            drawingCtx.fill();
+          }
+        };
+
+        const drawCrayonFlower = (point) => {
+          const scale = 0.82 + Math.random() * 0.45;
+          const tilt = (Math.random() - 0.5) * 10;
+
+          drawingCtx.save();
+          drawingCtx.globalCompositeOperation = "source-over";
+          drawingCtx.lineCap = "round";
+          drawingCtx.lineJoin = "round";
+
+          if (activeColor === "purple") {
+            drawLavender(point, scale, tilt);
+          } else if (activeColor === "yellow") {
+            drawDaisy(point, scale, tilt);
+          } else if (activeColor === "green") {
+            drawLeafySprig(point, scale, tilt);
+          } else {
+            drawPinkDoodleFlower(point, scale, tilt);
           }
 
           drawingCtx.restore();
+        };
+
+        const drawFlowerTrail = (from, to) => {
+          const distance = Math.hypot(to.x - from.x, to.y - from.y);
+          if (distance < 24) {
+            return;
+          }
+
+          const steps = Math.max(1, Math.floor(distance / 34));
+          for (let step = 1; step <= steps; step += 1) {
+            const progress = step / steps;
+            drawCrayonFlower({
+              x: from.x + (to.x - from.x) * progress + (Math.random() - 0.5) * 10,
+              y: from.y + (to.y - from.y) * progress + (Math.random() - 0.5) * 7
+            });
+          }
         };
 
         const eraseCrayonSegment = (from, to) => {
@@ -1722,14 +1910,14 @@
             if (activeTool === "eraser") {
               eraseCrayonSegment(lastDrawPoint, point);
             } else {
-              drawCrayonSegment(lastDrawPoint, point);
+              drawFlowerTrail(lastDrawPoint, point);
             }
           } else {
             const dotStart = { x: point.x - 0.1, y: point.y - 0.1 };
             if (activeTool === "eraser") {
               eraseCrayonSegment(dotStart, point);
             } else {
-              drawCrayonSegment(dotStart, point);
+              drawCrayonFlower(point);
             }
           }
 
