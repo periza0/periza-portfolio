@@ -1749,7 +1749,7 @@
           const rect = drawingCanvas.getBoundingClientRect();
           const x = event.clientX - rect.left;
           const y = event.clientY - rect.top;
-          const groundLine = rect.height * 0.5;
+          const groundLine = rect.height * 0.38;
 
           if (y < groundLine) {
             return null;
