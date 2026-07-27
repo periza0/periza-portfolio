@@ -1528,6 +1528,7 @@
         let activeProject = 0;
         let drawing = false;
         let lastDrawPoint = null;
+        let paintModeActive = false;
 
         const random = () => {
           seed = (seed * 1664525 + 1013904223) % 4294967296;
@@ -1549,6 +1550,26 @@
           startPage.style.setProperty("--paint-cursor", crayonCursor(flowerColors[activeColor]));
           startPage.style.setProperty("--eraser-cursor", eraserCursor());
           startPage.classList.toggle("is-erasing", activeTool === "eraser");
+        };
+
+        const setPaintMode = (enabled) => {
+          paintModeActive = enabled;
+          avatarButton.setAttribute("aria-pressed", String(enabled));
+          avatarButton.setAttribute("aria-label", enabled ? "Change avatar to normal version" : "Change avatar to paint version");
+          avatarImage.src = enabled ? "assets/avatar-paint-cutout.png" : "assets/avatar-normal-cutout.png";
+          paintDialog.classList.toggle("is-visible", enabled);
+          crayonTray.classList.toggle("is-visible", enabled);
+          startPage.classList.toggle("is-painting", enabled);
+          updateCursor();
+        };
+
+        const keepPaintMode = () => {
+          if (paintModeActive) {
+            startPage.classList.add("is-painting");
+            paintDialog.classList.add("is-visible");
+            crayonTray.classList.add("is-visible");
+            avatarButton.setAttribute("aria-pressed", "true");
+          }
         };
 
         const resize = () => {
@@ -1717,11 +1738,11 @@
           activeTool = selectedButton.dataset.tool;
           activeColor = selectedButton.dataset.color || activeColor;
           updateCursor();
+          keepPaintMode();
         };
 
         const drawingPointFromEvent = (event) => {
-          const paintMode = avatarButton.getAttribute("aria-pressed") === "true";
-          if (!paintMode) {
+          if (!paintModeActive) {
             return null;
           }
 
@@ -1932,6 +1953,7 @@
           }
 
           event.preventDefault();
+          keepPaintMode();
           drawing = true;
           lastDrawPoint = null;
           drawingCanvas.setPointerCapture?.(event.pointerId);
@@ -1952,6 +1974,7 @@
           event?.preventDefault();
           drawing = false;
           lastDrawPoint = null;
+          keepPaintMode();
         };
 
         const burstSparkles = (event) => {
@@ -2018,14 +2041,7 @@
         window.addEventListener("resize", restart, { passive: true });
         reduceMotion.addEventListener("change", restart);
         avatarButton.addEventListener("click", () => {
-          const painted = avatarButton.getAttribute("aria-pressed") === "true";
-          avatarButton.setAttribute("aria-pressed", String(!painted));
-          avatarButton.setAttribute("aria-label", painted ? "Change avatar to paint version" : "Change avatar to normal version");
-          avatarImage.src = painted ? "assets/avatar-normal-cutout.png" : "assets/avatar-paint-cutout.png";
-          paintDialog.classList.toggle("is-visible", !painted);
-          crayonTray.classList.toggle("is-visible", !painted);
-          startPage.classList.toggle("is-painting", !painted);
-          updateCursor();
+          setPaintMode(!paintModeActive);
         });
         crayonButtons.forEach((button) => {
           button.addEventListener("click", () => setActiveCrayon(button));
