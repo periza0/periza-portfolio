@@ -332,6 +332,15 @@
         touch-action: none;
       }
 
+      .start-page.is-painting .drawing-canvas {
+        pointer-events: auto;
+        cursor: var(--paint-cursor), crosshair;
+      }
+
+      .start-page.is-painting.is-erasing .drawing-canvas {
+        cursor: var(--eraser-cursor), cell;
+      }
+
       .sparkle-layer {
         position: absolute;
         inset: 0;
@@ -1435,7 +1444,7 @@
         const stars = [];
         const projectStars = [];
         const contactStars = [];
-        const starCount =  72;
+        const starCount = 56;
         const colors = ["#ffffff", "#bfeeff", "#9fd9ff", "#fff1bd"];
         const flowerColors = {
           pink: "#f18ab8",
@@ -1451,6 +1460,7 @@
         let contactHeight = 0;
         let animationId = 0;
         let lastTime = 0;
+        let lastFrameTime = 0;
         let seed = 42;
         let activeTool = "flower";
         let activeColor = "pink";
@@ -1527,7 +1537,7 @@
             });
           }
 
-          for (let index = 0; index < starCount + 122; index += 1) {
+          for (let index = 0; index < starCount + 72; index += 1) {
             const large = random() > 0.86;
             projectStars.push({
               x: random() * projectWidth,
@@ -1541,7 +1551,7 @@
             });
           }
 
-          for (let index = 0; index < starCount + 92; index += 1) {
+          for (let index = 0; index < starCount + 56; index += 1) {
             const large = random() > 0.88;
             contactStars.push({
               x: random() * contactWidth,
@@ -1564,11 +1574,10 @@
           const y = star.y + driftY;
           const pulse = 0.62 + Math.sin(slowTime * star.twinkle + star.phase) * 0.34;
 
-          targetCtx.save();
           targetCtx.globalAlpha = Math.max(0.32, pulse);
           targetCtx.fillStyle = star.color;
           targetCtx.shadowColor = star.color;
-          targetCtx.shadowBlur = star.large ?  8 : 4;
+          targetCtx.shadowBlur = star.large ? 7 : 0;
 
           if (star.large) {
             const arm = star.size * 3.1;
@@ -1589,18 +1598,40 @@
             targetCtx.fill();
           }
 
-          targetCtx.restore();
+        };
+
+        const drawStarLayer = (targetCtx, layerStars, layerWidth, layerHeight, time) => {
+          if (!layerWidth || !layerHeight) {
+            return;
+          }
+
+          targetCtx.clearRect(0, 0, layerWidth, layerHeight);
+          layerStars.forEach((star) => drawStar(targetCtx, star, time, layerWidth));
+          targetCtx.globalAlpha = 1;
+          targetCtx.shadowBlur = 0;
+        };
+
+        const drawActiveStars = (time) => {
+          if (document.body.classList.contains("view-projects")) {
+            drawStarLayer(projectsCtx, projectStars, projectWidth, projectHeight, time);
+            return;
+          }
+
+          if (document.body.classList.contains("view-contact")) {
+            drawStarLayer(contactCtx, contactStars, contactWidth, contactHeight, time);
+            return;
+          }
+
+          drawStarLayer(ctx, stars, width, height, time);
         };
 
         const render = (time = 0) => {
-          ctx.clearRect(0, 0, width, height);
-          projectsCtx.clearRect(0, 0, projectWidth, projectHeight);
-          contactCtx.clearRect(0, 0, contactWidth, contactHeight);
-          stars.forEach((star) => drawStar(ctx, star, time, width));
-          projectStars.forEach((star) => drawStar(projectsCtx, star, time, projectWidth));
-          contactStars.forEach((star) => drawStar(contactCtx, star, time, contactWidth));
+          if (!lastFrameTime || time - lastFrameTime > 42) {
+            drawActiveStars(time);
+            lastFrameTime = time;
+          }
 
-          if (!reduceMotion.matches) {
+          if (!reduceMotion.matches && !document.hidden) {
             animationId = requestAnimationFrame(render);
           }
         };
@@ -1610,6 +1641,7 @@
           resize();
           buildStars();
           lastTime = performance.now();
+          lastFrameTime = 0;
           render(lastTime);
         };
 
@@ -1627,16 +1659,14 @@
 
         const drawingPointFromEvent = (event) => {
           const paintMode = avatarButton.getAttribute("aria-pressed") === "true";
-          const clickedControl = event.target.closest(".ground-avatar, .glass-nav, .logo, .paint-dialog, .crayon-tray");
-
-          if (!paintMode || clickedControl) {
+          if (!paintMode) {
             return null;
           }
 
-          const rect = startPage.getBoundingClientRect();
+          const rect = drawingCanvas.getBoundingClientRect();
           const x = event.clientX - rect.left;
           const y = event.clientY - rect.top;
-          const groundLine = rect.height * 0.62;
+          const groundLine = rect.height * 0.64;
 
           if (y < groundLine) {
             return null;
@@ -1650,16 +1680,17 @@
           drawingCtx.save();
           drawingCtx.globalCompositeOperation = "source-over";
 
-          for (let pass = 0; pass < 4; pass += 1) {
-            const jitterFromX = from.x + (Math.random() - 0.5) * 5;
-            const jitterFromY = from.y + (Math.random() - 0.5) * 5;
-            const jitterToX = to.x + (Math.random() - 0.5) * 5;
-            const jitterToY = to.y + (Math.random() - 0.5) * 5;
+          for (let pass = 0; pass < 3; pass += 1) {
+            const jitter = 2.5 + pass * 1.4;
+            const jitterFromX = from.x + (Math.random() - 0.5) * jitter;
+            const jitterFromY = from.y + (Math.random() - 0.5) * jitter;
+            const jitterToX = to.x + (Math.random() - 0.5) * jitter;
+            const jitterToY = to.y + (Math.random() - 0.5) * jitter;
 
             drawingCtx.beginPath();
             drawingCtx.strokeStyle = color;
-            drawingCtx.globalAlpha = 0.18 + Math.random() * 0.18;
-            drawingCtx.lineWidth = 3 + Math.random() * 3;
+            drawingCtx.globalAlpha = 0.26 + Math.random() * 0.18;
+            drawingCtx.lineWidth = 5 + Math.random() * 3;
             drawingCtx.moveTo(jitterFromX, jitterFromY);
             drawingCtx.lineTo(jitterToX, jitterToY);
             drawingCtx.stroke();
@@ -1672,7 +1703,7 @@
           drawingCtx.save();
           drawingCtx.globalCompositeOperation = "destination-out";
           drawingCtx.globalAlpha = 1;
-          drawingCtx.lineWidth = 34;
+          drawingCtx.lineWidth = 42;
           drawingCtx.beginPath();
           drawingCtx.moveTo(from.x, from.y);
           drawingCtx.lineTo(to.x, to.y);
@@ -1713,7 +1744,7 @@
           event.preventDefault();
           drawing = true;
           lastDrawPoint = null;
-          startPage.setPointerCapture?.(event.pointerId);
+          drawingCanvas.setPointerCapture?.(event.pointerId);
           drawAtPoint(point);
         };
 
@@ -1723,7 +1754,8 @@
           }
 
           event.preventDefault();
-          drawAtPoint(drawingPointFromEvent(event));
+          const events = event.getCoalescedEvents?.() || [event];
+          events.forEach((coalescedEvent) => drawAtPoint(drawingPointFromEvent(coalescedEvent)));
         };
 
         const stopDrawing = (event) => {
@@ -1813,6 +1845,9 @@
           document.body.classList.toggle("view-contact", window.location.hash === "#contact");
           window.scrollTo(0, 0);
           updateProjectCarousel(activeProject);
+          lastFrameTime = 0;
+          cancelAnimationFrame(animationId);
+          render(performance.now());
         };
 
         contactForm.addEventListener("submit", (event) => {
@@ -1849,12 +1884,21 @@
           });
         });
         window.addEventListener("hashchange", updateView);
+        document.addEventListener("visibilitychange", () => {
+          if (document.hidden) {
+            cancelAnimationFrame(animationId);
+            return;
+          }
+
+          lastFrameTime = 0;
+          render(performance.now());
+        });
         updateView();
         updateProjectCarousel(0);
-        startPage.addEventListener("pointerdown", startDrawing);
-        startPage.addEventListener("pointermove", continueDrawing);
-        startPage.addEventListener("pointerup", stopDrawing);
-        startPage.addEventListener("pointercancel", stopDrawing);
+        drawingCanvas.addEventListener("pointerdown", startDrawing);
+        drawingCanvas.addEventListener("pointermove", continueDrawing);
+        drawingCanvas.addEventListener("pointerup", stopDrawing);
+        drawingCanvas.addEventListener("pointercancel", stopDrawing);
         startPage.addEventListener("dragstart", (event) => event.preventDefault());
         updateCursor();
         restart();
