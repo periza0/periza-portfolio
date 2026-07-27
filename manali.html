@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Manali Trip</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      font-family: 'Poppins', sans-serif;
+      background: #fffaf4;
+      overflow-x: hidden;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 48px;
+      color: #d8bfae;
+      margin: 20px 0 40px;
+    }
+
+    .gallery-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      padding: 20px;
+      min-height: calc(100vh - 160px);
+    }
+
+    .flip-card {
+      width: 200px;
+      height: 200px;
+      perspective: 1000px;
+      border-radius: 20px;
+    }
+
+    .flip-inner {
+      width: 100%;
+      height: 100%;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+      border-radius: 20px;
+      position: relative;
+    }
+
+    .flip-card:hover .flip-inner {
+      transform: rotateY(180deg);
+    }
+
+    .flip-front, .flip-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .flip-front img, .flip-back img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .flip-back {
+      transform: rotateY(180deg);
+    }
+
+    .back-btn {
+      display: block;
+      margin: 40px auto 20px;
+      background: #f5e5d6;
+      padding: 12px 24px;
+      border-radius: 30px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #6d4b52;
+      transition: background 0.3s;
+      text-align: center;
+      width: fit-content;
+    }
+
+    .back-btn:hover {
+      background: #ecdac7;
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 32px;
+        margin-top: 10px;
+      }
+
+      .flip-card {
+        width: 140px;
+        height: 140px;
+      }
+
+      .gallery-wrapper {
+        padding-bottom: 40px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .flip-card {
+        width: 120px;
+        height: 120px;
+      }
+
+      .back-btn {
+        font-size: 14px;
+        padding: 10px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Manali</h1>
+
+  <div class="gallery-wrapper">
+    <div class="flip-card"><div class="flip-inner"><div class="flip-front"><img src="manali1.png"></div><div class="flip-back"><img src="manali12.png"></div></div></div>
+    <div class="flip-card"><div class="flip-inner"><div class="flip-front"><img src="manali2.png"></div><div class="flip-back"><img src="manali12.png"></div></div></div>
+    <div class="flip-card"><div class="flip-inner"><div class="flip-front"><img src="manali3.png"></div><div class="flip-back"><img src="manali13.png"></div></div></div>
+    <div class="flip-card"><div class="flip-inner"><div class="flip-front"><img src="manali4.png"></div><div class="flip-back"><img src="manali11.png"></div></div></div>
+    <div class="flip-card"><div class="flip-inner"><div class="flip-front"><img src="manali5.png"></div><div class="flip-back"><img src="manali11.png"></div></div></div>
+    <div class="flip-card"><div class="flip-inner"><div class="flip-front"><img src="manali6.png"></div><div class="flip-back"><img src="manali13.png"></div></div></div>
+    <div class="flip-card"><div class="flip-inner"><div class="flip-front"><img src="manali7.png"></div><div class="flip-back"><img src="manali12.png"></div></div></div>
+    <div class="flip-card"><div class="flip-inner"><div class="flip-front"><img src="manali8.png"></div><div class="flip-back"><img src="manali12.png"></div></div></div>
+    <div class="flip-card"><div class="flip-inner"><div class="flip-front"><img src="manali9.png"></div><div class="flip-back"><img src="manali12.png"></div></div></div>
+    <div class="flip-card"><div class="flip-inner"><div class="flip-front"><img src="manali10.png"></div><div class="flip-back"><img src="manali12.png"></div></div></div>
+  </div>
+
+  <a class="back-btn" href="travel2.html">← back to my travels</a>
+
+</body>
+</html>
